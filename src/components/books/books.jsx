@@ -1,34 +1,49 @@
 import BookCard from "../bookCard/bookCard";
-import { Box } from "@mui/material";
-import useGetBooks from "../../hooks/useGetBooks"
-
-const BASE_URL = "https://onedrive.live.com/";
+import { Box, Grid } from "@mui/material";
+import useGetBooks from "../../hooks/useGetBooks";
+import { useState } from "react";
+import Pagination from "@mui/material/Pagination";
+import Category from "../category/category";
 
 export default function Books() {
-    const booksList = useGetBooks();
-    console.log("--------books--------", booksList)
+  const [page, setPage] = useState(1);
+  const { booksList, totalBooks } = useGetBooks(page, 10);
+  console.log("--------books--------", booksList);
+  const handleChange = (event, value) => {
+    setPage(value);
+  };
+
+  if (!booksList) {
+    return null;
+  }
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        p: 1,
-        m: 1,
-        bgcolor: "#f5f5f5",
-        borderRadius: 1,
-        height: "400px",
-      }}
-    >
-      <BookCard />
-      <div style={{ marginRight: "20px" }} />
-      <BookCard />
-      <div style={{ marginRight: "20px" }} />
-          <BookCard />
-          {/* {
-              booksList && booksList.map((book) => (
-                  <div style={{ marginRight: "20px" }} ><BookCard /></div>
-              ))
-          } */}
+    <Box sx={{ marginTop: "-10px" }}>
+      <Grid
+        container
+        spacing={4}
+        justifyContent={"space-between"}
+        sx={{ marginBottom: "20px" }}
+      >
+        <Grid item justifyContent={"space-between"}>
+          <Category />
+        </Grid>
+        <Grid item justifyContent={"space-between"}>
+          <Pagination
+            count={Math.ceil(totalBooks / 10)}
+            page={page}
+            onChange={handleChange}
+          />
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={3} justifyContent={"space-between"}>
+        {booksList &&
+          booksList.map((book) => (
+            <Grid item spacing={3} justifyContent={"space-between"}>
+              <BookCard bookDetails={book} />
+            </Grid>
+          ))}
+      </Grid>
     </Box>
   );
 }

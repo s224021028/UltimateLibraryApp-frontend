@@ -1,44 +1,29 @@
 import ButtonGroup from "@mui/material-next/ButtonGroup";
-import { Button, Box } from "@mui/material";
-import Books from "../books/books";
-import { Fragment } from "react";
+import { Button } from "@mui/material";
 
 export default function Category() {
   return (
-    <Fragment>
-      <Box
+    <ButtonGroup variant="elevated">
+      <Button
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          p: 1,
-          m: 1,
-          bgcolor: "background.paper",
-          borderRadius: 1,
+          color: "White",
+          marginLeft: "20px",
+          backgroundColor: "#54989C",
         }}
       >
-        <ButtonGroup variant="elevated">
-          <Button
-            style={{
-              color: "red",
-              marginLeft: "20px",
-              backgroundColor: "grey",
-            }}
-          >
-            All
-          </Button>
-          <Button>Sci-Fi</Button>
-          <Button>Fantasy</Button>
-          <Button>Fiction</Button>
-          <Button
-            style={{
-              marginRight: "20px",
-            }}
-          >
-            Comedy
-          </Button>
-        </ButtonGroup>
-      </Box>
-      <Books />
-    </Fragment>
+        All
+      </Button>
+      <Button sx={{ color: "black" }}>Sci-Fi</Button>
+      <Button sx={{ color: "black" }}>Fantasy</Button>
+      <Button sx={{ color: "black" }}>Fiction</Button>
+      <Button
+        sx={{
+          marginRight: "20px",
+          color: "black",
+        }}
+      >
+        Comedy
+      </Button>
+    </ButtonGroup>
   );
 }

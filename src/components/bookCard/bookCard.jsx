@@ -3,26 +3,21 @@ import {
   CardActionArea,
   Card,
   CardContent,
-  CardMedia,
   Typography,
 } from "@mui/material";
 
-export default function BookCard() {
+export default function BookCard({ bookDetails }) {
+  console.log("-------bookDetails-------", bookDetails);
   return (
-    <Card sx={{ maxWidth: 150, maxHeight: 200 }}>
+    <Card sx={{ width: 160, height: 300}}>
       <CardActionArea>
-        <CardMedia
-          component="img"
-          height="100"
-          image="/static/images/cards/contemplative-reptile.jpg"
-          alt="book1"
-        />
+        <img src={bookDetails.cover} width={160} height={200} alt='Large Pizza' />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            Book 1
+          <Typography gutterBottom variant="title" component="div">
+            {bookDetails.title.toUpperCase()}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Author
+          <Typography variant="inherit" color="text.secondary">
+            {bookDetails.author}
           </Typography>
         </CardContent>
       </CardActionArea>
