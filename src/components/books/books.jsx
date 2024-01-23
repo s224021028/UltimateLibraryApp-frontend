@@ -7,7 +7,7 @@ import Category from "../category/category";
 
 export default function Books() {
   const [page, setPage] = useState(1);
-  const { booksList, totalBooks } = useGetBooks(page, 10);
+  const { booksList, totalBooks } = useGetBooks(page, 12);
   console.log("--------books--------", booksList);
   const handleChange = (event, value) => {
     setPage(value);
@@ -29,17 +29,17 @@ export default function Books() {
         </Grid>
         <Grid item justifyContent={"space-between"}>
           <Pagination
-            count={Math.ceil(totalBooks / 10)}
+            count={Math.ceil(totalBooks / 12)}
             page={page}
             onChange={handleChange}
           />
         </Grid>
       </Grid>
 
-      <Grid container spacing={3} justifyContent={"space-between"}>
+      <Grid container spacing={3} justifyContent={"center"}>
         {booksList &&
           booksList.map((book) => (
-            <Grid item spacing={3} justifyContent={"space-between"}>
+            <Grid item spacing={3}>
               <BookCard bookDetails={book} />
             </Grid>
           ))}
