@@ -1,17 +1,11 @@
 import BookCard from "../bookCard/bookCard";
 import { Box, Grid } from "@mui/material";
 import useGetBooks from "../../hooks/useGetBooks";
-import { useState } from "react";
-import Pagination from "@mui/material/Pagination";
 import Category from "../category/category";
 
 export default function Books() {
-  const [page, setPage] = useState(1);
-  const { booksList, totalBooks } = useGetBooks(page, 12);
+  const booksList = useGetBooks();
   console.log("--------books--------", booksList);
-  const handleChange = (event, value) => {
-    setPage(value);
-  };
 
   if (!booksList) {
     return null;
@@ -21,25 +15,18 @@ export default function Books() {
       <Grid
         container
         spacing={4}
-        justifyContent={"space-between"}
+        justifyContent={"center"}
         sx={{ marginBottom: "20px" }}
       >
-        <Grid item justifyContent={"space-between"}>
+        <Grid item justifyContent={"center"}>
           <Category />
-        </Grid>
-        <Grid item justifyContent={"space-between"}>
-          <Pagination
-            count={Math.ceil(totalBooks / 12)}
-            page={page}
-            onChange={handleChange}
-          />
         </Grid>
       </Grid>
 
       <Grid container spacing={3} justifyContent={"center"}>
         {booksList &&
           booksList.map((book) => (
-            <Grid item spacing={3}>
+            <Grid item spacing={3} key={book.book_id}>
               <BookCard bookDetails={book} />
             </Grid>
           ))}
