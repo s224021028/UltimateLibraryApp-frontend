@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import useGetReservations from '../../hooks/useGetReservations';
+import useGetBooks from '../../hooks/useGetBooks';
 
 const StyledTableCell = styled(TableCell)(() => ({
   
@@ -24,8 +25,9 @@ const StyledTableCell = styled(TableCell)(() => ({
 
 export default function CustomizedTables() {
   const reservations = useGetReservations();
+  const books= useGetBooks();
 
-  if (!reservations) {
+  if (!reservations || !books) {
     return null;
   }
 
@@ -44,6 +46,11 @@ export default function CustomizedTables() {
     const ExpiryFomattedDate=expiryDate.toLocaleDateString('en-GB', options)
     return ExpiryFomattedDate
   }
+
+  function getBookTitles(bookTitle){
+    const book=books.find((book)=>book.book_id === bookTitle);
+    return book ? book.title: "Not Found"
+  }
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 720 }} aria-label="customized table">
@@ -60,7 +67,7 @@ export default function CustomizedTables() {
           {reservations && reservations.map((reservation) => (
             <TableRow key={reservation.book_id}>
               <StyledTableCell component="th" scope="row">{reservation.reservation_id}</StyledTableCell>
-              <StyledTableCell style={{width:'20%'}}>{reservation.book_id}</StyledTableCell>
+              <StyledTableCell style={{width:'20%'}}>{getBookTitles(reservation.book_id)}</StyledTableCell>
               <StyledTableCell>{formatDate(reservation.issue_date)}</StyledTableCell>
               <StyledTableCell>{calculateExpiryDate(reservation.issue_date)}</StyledTableCell>
               <StyledTableCell style={{width: '20%'}}>{reservation.status}</StyledTableCell>
