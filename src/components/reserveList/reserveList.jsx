@@ -22,11 +22,6 @@ const StyledTableCell = styled(TableCell)(() => ({
   },
 }));
 
-// function createData(_id, book_id, issue_date, status, user_id) {
-//   return { _id, book_id, issue_date, status, user_id};
-//  }
-
-
 export default function CustomizedTables() {
   const reservations = useGetReservations();
 
@@ -34,6 +29,21 @@ export default function CustomizedTables() {
     return null;
   }
 
+  function formatDate(dateString) {
+    const options = { day: 'numeric', month: 'numeric', year: 'numeric' };
+    const formattedDate = new Date(dateString).toLocaleDateString('en-GB', options);
+    return formattedDate;
+  }
+
+  function calculateExpiryDate(issuedate){
+    const issueDate= new Date(issuedate);
+    const expiryDate= new Date(issueDate);
+
+    expiryDate.setDate(issueDate.getDate()+30);
+    const options = { day: 'numeric', month: 'numeric', year: 'numeric' };
+    const ExpiryFomattedDate=expiryDate.toLocaleDateString('en-GB', options)
+    return ExpiryFomattedDate
+  }
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 720 }} aria-label="customized table">
@@ -51,8 +61,8 @@ export default function CustomizedTables() {
             <TableRow key={reservation.book_id}>
               <StyledTableCell component="th" scope="row">{reservation.reservation_id}</StyledTableCell>
               <StyledTableCell style={{width:'20%'}}>{reservation.book_id}</StyledTableCell>
-              <StyledTableCell>{reservation.issue_date}</StyledTableCell>
-              <StyledTableCell>{reservation.issue_date}</StyledTableCell>
+              <StyledTableCell>{formatDate(reservation.issue_date)}</StyledTableCell>
+              <StyledTableCell>{calculateExpiryDate(reservation.issue_date)}</StyledTableCell>
               <StyledTableCell style={{width: '20%'}}>{reservation.status}</StyledTableCell>
             </TableRow>
           ))}
