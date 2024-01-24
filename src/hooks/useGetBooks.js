@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import booksRsp from "../api_responses/home-response.json";
-
+import { useStore } from "../store/store";
 const BASE_URL =
   "https://onedrive.live.com/?authkey=%21ACcvQjo0JeZuH7U&cid=47D3B2D6AF52A4EC&id=47D3B2D6AF52A4EC%212962&parId=47D3B2D6AF52A4EC%212961&o=OneUp";
 
-export default function useGetBooks(from, count) {
+export default function useGetBooks() {
   const [books, setBooks] = useState(null);
-  const startIndex = (from - 1) * 10;
-  const endIndex = startIndex + count;
+
   useEffect(() => {
     axios
       .get(BASE_URL)
@@ -22,8 +21,18 @@ export default function useGetBooks(from, count) {
       });
   }, []);
 
-  const booksList = books?.slice(startIndex, endIndex);
-  const totalBooks = books?.length;
+  const selCategory = useStore((state) => state.category);
 
-  return { booksList, totalBooks };
+  let selCategoryBooks = [];
+  let booksList = [];
+  let totalBooks = 0;
+  if (selCategory !== "ALL") {
+    selCategoryBooks = books?.filter(
+      (book) => book.category.toUpperCase() === selCategory.toUpperCase()
+    );
+  } else {
+    selCategoryBooks = books?.length > 0 && [...books];
+  }
+
+  return selCategoryBooks;
 }
