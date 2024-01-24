@@ -4,7 +4,8 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Books from "../books/books"
+import Books from "../books/books";
+import Reservation from "../reserve/reserve";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -16,7 +17,7 @@ function CustomTabPanel(props) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
-    >
+      >
       {value === index && (
         <Box sx={{ p: 3 }}>
           <Typography>{children}</Typography>
@@ -69,11 +70,14 @@ export default function BasicTabs() {
       >
        <Books />
       </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        Reserve
+      <CustomTabPanel 
+      value={value} 
+      index={1} 
+      style={{ backgroundColor: "white" }}
+      >
+        <Reservation />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        Request
       </CustomTabPanel>
     </Box>
   );
