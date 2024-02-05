@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Books from "../books/books";
 import Reservation from "../reserve/reserve";
+import Request from "../request/request";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -77,7 +78,11 @@ export default function BasicTabs() {
       >
         <Reservation />
       </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
+      <CustomTabPanel 
+      value={value} 
+      index={2} 
+      style={{backgroundColor:"white"}}>
+        <Request/>
       </CustomTabPanel>
     </Box>
   );
