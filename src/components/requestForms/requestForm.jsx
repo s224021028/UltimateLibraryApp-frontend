@@ -1,21 +1,9 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import FilledInput from '@mui/material/FilledInput';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
-import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import { useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import {TextField } from '@mui/material';
 
 export default function ComposedTextField() {
-
-    const [RequestFormClose, setRequestFormClose]=useState();
-
-  const onClickRequest =()=>{
-    setRequestFormClose(false);
-  }
 
   return (
     <Box
@@ -36,31 +24,6 @@ export default function ComposedTextField() {
 
         <InputLabel>ISBN</InputLabel>
         <TextField fullWidth id="component-simple" placeholder='ISBN of the Book' />
-
-        {/* <Box sx={{margin:4,
-        display:'flex',
-        justifyContent:'space-around',
-        alignItems:'center'
-        }}>
-        <Button
-        style={{ 
-            backgroundColor:'#54989C',
-            color:'white',
-            }}
-
-        onClick={onClickRequest}
-        >
-            Close
-        </Button>
-        <Button
-        style={{ 
-            backgroundColor:'#54989C',
-            color:'white',
-            }}
-        >
-            Submit
-        </Button>
-        </Box> */}
     </Box>
   );
 }
