@@ -2,9 +2,12 @@ import BookCard from "../bookCard/bookCard";
 import { Box, Grid } from "@mui/material";
 import useGetBooks from "../../hooks/useGetBooks";
 import Category from "../category/category";
+import { useStore } from "../../store/store";
 
 export default function Books() {
-  const booksList = useGetBooks();
+  //const booksList = useGetBooks();
+  const booksList = useStore((state) => state.booksData);
+  const updateBooksData = useStore((state) => state.updateBooksData);
   console.log("--------books--------", booksList);
 
   if (!booksList) {

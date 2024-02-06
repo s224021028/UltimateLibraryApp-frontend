@@ -16,56 +16,55 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import icon from "../../images/appicon.png";
 import CenteredTabs from "../tabs/tabs";
 import AdminTabs from "../adminTabs/adminTabs";
-import useGetBooks from "../../hooks/useGetBooks";
+import { Autocomplete, TextField } from "@mui/material";
+import { useStore } from "../../store/store";
+import { outlinedInputClasses } from '@mui/material/OutlinedInput';
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
+const customTheme = (outerTheme) =>
+  createTheme({
+    palette: {
+      mode: outerTheme.palette.mode,
     },
-  },
-}));
+    components: {
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            '--TextField-brandBorderColor': '#E0E3E7',
+            '--TextField-brandBorderHoverColor': '#E0E3E7',
+            '--TextField-brandBorderFocusedColor': '#E0E3E7',
+            '& label.Mui-focused': {
+              color: 'var(--TextField-brandBorderFocusedColor)',
+            },
+          },
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          notchedOutline: {
+            borderColor: 'var(--TextField-brandBorderColor)',
+          },
+          root: {
+            [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: 'var(--TextField-brandBorderHoverColor)',
+            },
+            [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
+              borderColor: 'var(--TextField-brandBorderFocusedColor)',
+            },
+          },
+        },
+      },
+    },
+  });
 
 export default function Header() {
+  const outerTheme = useTheme();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const [isAdmin, setIsAdmin] = React.useState(true);
+  const [isAdmin, setIsAdmin] = React.useState(false);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  useGetBooks();
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -79,6 +78,9 @@ export default function Header() {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
+
+  const booksList = useStore((state) => state.booksData);
+  const updateBooksData = useStore((state) => state.updateBooksData);
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -172,7 +174,7 @@ export default function Header() {
           <Typography variant="h5" noWrap component="div">
             Ultimate Library
           </Typography>
-          <Search sx={{ flexGrow: 1 }} style={{ marginLeft: "150px" }}>
+          {/* <Search sx={{ flexGrow: 1 }} style={{ marginLeft: "150px" }}>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -180,7 +182,36 @@ export default function Header() {
               placeholder="Search"
               inputProps={{ "aria-label": "search" }}
             />
-          </Search>
+          </Search> */}
+          <ThemeProvider theme={customTheme(outerTheme)}>
+
+           <Autocomplete
+      id="country-select-demo"
+      sx={{ width: 300, flexGrow: 1 , marginLeft: "150px" }}
+      options={booksList}
+      autoHighlight
+      getOptionLabel={(option) => option.title}
+      renderOption={(props, option) => (
+        <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+          {option.title}
+        </Box>
+      )}
+      renderInput={(params) => (
+        <TextField
+          onChange={(e) => {
+            console.log("-------value-----", e.target.value)
+          }}
+          style={{color:"white"}}
+          {...params}
+          label="Search"
+          inputProps={{
+            ...params.inputProps,
+            autoComplete: 'new-password', // disable autocomplete and autofill
+          }}
+        />
+      )}
+            />
+            </ThemeProvider>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton
