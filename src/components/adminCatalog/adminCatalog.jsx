@@ -24,6 +24,7 @@ import AddBook from "../addBook/addBook";
 import { useStore } from "../../store/store";
 import { Button } from "@mui/material";
 import axios from "axios";
+import DeleteBook from "../deleteBook/deleteBook";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -136,9 +137,12 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, rows, discardRows, tempBooks } = props;
+  const { numSelected, rows, discardRows, tempBooks, selected } = props;
   const closeAddNewBook = useStore((state) => state.closeAddNewBook);
   const updateBooksData = useStore((state) => state.updateBooksData);
+
+  const isDeleteBook = useStore((state) => state.isDeleteBook);
+  const closeDeleteBook = useStore((state) => state.closeDeleteBook);
 
   // save new books
   const handleSave = () => {
@@ -196,7 +200,10 @@ function EnhancedTableToolbar(props) {
       {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton>
-            <DeleteIcon />
+            <DeleteIcon onClick={() => {
+              //open delete dialog 
+              closeDeleteBook(true)
+            } } />
           </IconButton>
         </Tooltip>
       ) : (
@@ -232,6 +239,7 @@ EnhancedTableToolbar.propTypes = {
   rows: PropTypes.func.isRequired,
   discardRows: PropTypes.func.isRequired,
   tempBooks: PropTypes.func.isRequired,
+  selected: PropTypes.func.isRequired,
 };
 
 export default function AdminCatalog() {
@@ -243,17 +251,52 @@ export default function AdminCatalog() {
 
   const isAddNewBook = useStore((state) => state.isAddNewBook);
   const closeAddNewBook = useStore((state) => state.closeAddNewBook);
-  //const [bookId, setBookId] = useState(null);
+
+  const isDeleteBook = useStore((state) => state.isDeleteBook);
+  const closeDeleteBook = useStore((state) => state.closeDeleteBook);
+  const [deleteBookIds, setDeleteBookIds] = React.useState([]);
+  const [rows, setRows] = React.useState([]);
 
   const closeAddNewBookDialog = () => {
     closeAddNewBook(!isAddNewBook);
     //setBookId(null);
   };
 
+  const closeDeleteBookDialog = () => {
+    closeDeleteBook(!isDeleteBook);
+    setSelected([]);
+  };
+
   const booksData = useStore((state) => state.booksData);
   const updateBooksData = useStore((state) => state.updateBooksData);
 
-  const [rows, setRows] = React.useState([]);
+  //delete book
+  const handleDelete = () => {
+    console.log("---delete--selected-------", selected);
+    const BASE_URL = "url";
+    const data = [...selected];
+    axios.delete(BASE_URL, { data })
+      .then(response => {
+        // Handle success
+        console.log('Deleted successfully', response);
+      })
+      .catch(error => {
+        // Handle error
+        console.error('There was an error!', error);
+      });
+
+    closeDeleteBookDialog();
+    let newRows = rows.filter((row) => {
+      if (selected.indexOf(row.book_id) === -1) {
+        return row;
+      }
+    })
+    console.log("-----newRows-----", newRows);
+    setRows([...newRows]);
+    updateBooksData(newRows);
+  }
+
+  
   const [tempBooks, setTempBooks] = React.useState([]);
 
   console.log("---adminCatalogBooks------", rows);
@@ -271,7 +314,8 @@ export default function AdminCatalog() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = rows?.map((n) => n.id);
+      const newSelected = rows?.map((n) => n.book_id);
+      console.log("----rows secled----", rows)
       setSelected(newSelected);
       return;
     }
@@ -307,6 +351,9 @@ export default function AdminCatalog() {
         selected.slice(selectedIndex + 1)
       );
     }
+
+    console.log("---selectedIndex---", selectedIndex)
+    console.log("---newSelected---", newSelected)
     setSelected(newSelected);
   };
 
@@ -355,11 +402,19 @@ export default function AdminCatalog() {
             addNewBook={addNewBook}
           />
         )}
+        {isDeleteBook && (
+          <DeleteBook
+            closeDeleteBookDialog={closeDeleteBookDialog}
+            selected={selected}
+            handleDelete = {handleDelete}
+          />
+        )}
         <EnhancedTableToolbar
           numSelected={selected.length}
           rows={rows}
           discardRows={discardRows}
           tempBooks={tempBooks}
+          selected = {selected}
         />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
@@ -374,13 +429,13 @@ export default function AdminCatalog() {
             />
             <TableBody>
               {visibleRows?.map((row, index) => {
-                const isItemSelected = isSelected(row.title);
+                const isItemSelected = isSelected(row.book_id);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.title)}
+                    onClick={(event) => handleClick(event, row.book_id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
