@@ -11,6 +11,11 @@ export const useStore = create((set) => ({
     set((state) => ({
       isAddNewBook: status,
     })),
+  isDeleteBook: false,
+  closeDeleteBook: (status) =>
+    set((state) => ({
+      isDeleteBook: status,
+    })),
   booksData: [],
   updateBooksData: (bookDetails) =>
     set((state) => ({
