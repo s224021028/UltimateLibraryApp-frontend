@@ -7,8 +7,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
-import useGetAdminRequests from '../../hooks/useGetAdminRequests';
+import useGetAdminReservations from '../../hooks/useGetAdminReservations';
+import useGetBooks from '../../hooks/useGetBooks';
 import { Button, Box } from '@mui/material';
 
 const StyledTableCell = styled(TableCell)(() => ({
@@ -25,7 +25,12 @@ const StyledTableCell = styled(TableCell)(() => ({
 }));
 
 export default function CustomizedTables() {
-  const adminRequests = useGetAdminRequests();
+  const adminReservations = useGetAdminReservations();
+  const books= useGetBooks();
+
+  if (!adminReservations || !books) {
+    return null;
+  }
 
   function formatDate(dateString) {
     const options = { day: 'numeric', month: 'numeric', year: 'numeric' };
@@ -33,10 +38,13 @@ export default function CustomizedTables() {
     return formattedDate;
   }
 
+  function getBookTitles(bookTitle){
+    const book=books.find((book)=>book.book_id === bookTitle);
+    return book ? book.title: "Not Found"
+  }
   return (
-    <Box>
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 720, height:192 }} aria-label="customized table">
+      <Table sx={{ minWidth: 720 }} aria-label="customized table">
         <TableHead>
           <TableRow>
             <StyledTableCell>S.No</StyledTableCell>
@@ -45,42 +53,26 @@ export default function CustomizedTables() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {adminRequests && adminRequests.map((adminRequest) => (
-            <TableRow key={adminRequest.book_id}>
-              <StyledTableCell component="th" scope="row">{adminRequest.request_id}</StyledTableCell>
-              <StyledTableCell style={{width:'20%'}}>{adminRequest.book_title}</StyledTableCell>
+          {adminReservations && adminReservations.map((adminReservation) => (
+            <TableRow key={adminReservation.book_id}>
+              <StyledTableCell component="th" scope="row">{adminReservation.reservation_id}</StyledTableCell>
+              <StyledTableCell>{getBookTitles(adminReservation.book_id)}</StyledTableCell>
               <StyledTableCell
-              sx={{display:'flex',
-              flexDirection:'row',              
-              justifyContent:'space-between'
+                sx={{display:'flex',
+                flexDirection:'row',
+                justifyContent:'space-between'
+              }}>
+                <Box>
+                <ul>UserID : {adminReservation.user_id}</ul>
+                <ul>{formatDate(adminReservation.issue_date)}</ul>
+                </Box>
+              <Box
+              sx={{
+                display:"flex",
+                flexDirection:'column',
+                justifyContent:'center'
             }}
               >
-                <Box>
-                <ul>Placed Date: {formatDate(adminRequest.date)}</ul>
-                <ul> User ID: {adminRequest.user_id} </ul>
-                <ul>Author : {adminRequest.book_author}</ul>
-                <ul>Language: {adminRequest.book_language}</ul>
-                <ul>ISBN: {adminRequest.isbn} </ul>
-                </Box>
-
-                <Box
-                sx={{
-                    display:"flex",
-                    flexDirection:'column',
-                    justifyContent:'center'
-                }}
-                >
-                    <Button
-                    sx={{
-                        backgroundColor:'#54989C',
-                        color:'white',
-                        '&:hover': {
-                            backgroundColor: '#3e868c',
-                        },
-                        borderRadius:20,
-                        margin:1
-                    }}
-                    >Accept</Button>
                     <Button
                     sx={{backgroundColor:'#54989C',
                     color:'white',
@@ -88,10 +80,8 @@ export default function CustomizedTables() {
                         backgroundColor: '#3e868c',
                     },
                     borderRadius:20,
-                    margin:1
                 }}
-
-                    >Decline</Button>
+                    >{adminReservation.status}</Button>
                 </Box>
               </StyledTableCell>
             </TableRow>
@@ -99,6 +89,5 @@ export default function CustomizedTables() {
         </TableBody>
       </Table>
     </TableContainer>
-    </Box>
   );
 }
