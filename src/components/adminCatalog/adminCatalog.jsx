@@ -25,6 +25,7 @@ import { useStore } from "../../store/store";
 import { Button } from "@mui/material";
 import axios from "axios";
 import DeleteBook from "../deleteBook/deleteBook";
+import EditBook from "../editBook/editBook";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -254,11 +255,22 @@ export default function AdminCatalog() {
 
   const isDeleteBook = useStore((state) => state.isDeleteBook);
   const closeDeleteBook = useStore((state) => state.closeDeleteBook);
+
+  const isEditBook = useStore((state) => state.isEditBook);
+  const closeEditBook = useStore((state) => state.closeEditBook);
+
   const [deleteBookIds, setDeleteBookIds] = React.useState([]);
   const [rows, setRows] = React.useState([]);
 
+  const [editBookDetails, setEditBookDetails] = React.useState([]);
+
   const closeAddNewBookDialog = () => {
     closeAddNewBook(!isAddNewBook);
+    //setBookId(null);
+  };
+
+  const closeEditBookDialog = () => {
+    closeEditBook(!isEditBook);
     //setBookId(null);
   };
 
@@ -269,6 +281,35 @@ export default function AdminCatalog() {
 
   const booksData = useStore((state) => state.booksData);
   const updateBooksData = useStore((state) => state.updateBooksData);
+
+  const handleEditBook = (editedBookDetails) => {
+    console.log("---------handleEditBook---------", editedBookDetails);
+
+    axios
+      .post("BASE_URL", editedBookDetails)
+      .then((response) => {
+        // Handle the response here
+        console.log("Response:", response.data);
+      })
+      .catch((error) => {
+        // Handle the error here
+        console.error("Error:", error);
+      });
+
+    const updatedRows = rows.map((row) => {
+      if (row.book_id === editedBookDetails.book_id) {
+        console.log("-----match--------", editedBookDetails)
+        return editedBookDetails;
+      }
+      else {
+        return row;
+      }
+    });
+    console.log("---------new updatedRows-----", updatedRows);
+    setRows([...updatedRows]);
+    updateBooksData([...updatedRows]);
+    closeEditBookDialog();
+  }
 
   //delete book
   const handleDelete = () => {
@@ -409,6 +450,13 @@ export default function AdminCatalog() {
             handleDelete = {handleDelete}
           />
         )}
+        {isEditBook && (
+          <EditBook
+            closeEditBookDialog={closeEditBookDialog}
+            editBookDetails={editBookDetails}
+            handleEditBook = {handleEditBook}
+          />
+        )}
         <EnhancedTableToolbar
           numSelected={selected.length}
           rows={rows}
@@ -474,6 +522,8 @@ export default function AdminCatalog() {
                         <EditIcon
                           onClick={(e) => {
                             e.stopPropagation();
+                            closeEditBook(true);
+                            setEditBookDetails({...row})
                           }}
                         />
                       </IconButton>
