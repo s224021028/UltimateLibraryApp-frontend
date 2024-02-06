@@ -15,6 +15,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import icon from "../../images/appicon.png"
 import CenteredTabs from '../tabs/tabs';
+import AdminTabs from '../adminTabs/adminTabs';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -59,7 +60,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function Header() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
+  const [isAdmin, setIsAdmin] = React.useState(true);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -210,7 +211,7 @@ export default function Header() {
             </IconButton>
           </Box>
         </Toolbar>
-        <CenteredTabs/>
+        {isAdmin ? <AdminTabs/> : <CenteredTabs /> }
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
