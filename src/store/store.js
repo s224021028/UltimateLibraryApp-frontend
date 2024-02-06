@@ -6,4 +6,14 @@ export const useStore = create((set) => ({
     set((state) => ({
       category: selCategory,
     })),
+  isAddNewBook: false,
+  closeAddNewBook: (status) =>
+    set((state) => ({
+      isAddNewBook: status,
+    })),
+  booksData: [],
+  updateBooksData: (bookDetails) =>
+    set((state) => ({
+      booksData: bookDetails,
+    })),
 }));

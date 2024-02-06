@@ -22,6 +22,7 @@ export default function useGetBooks() {
   }, []);
 
   const selCategory = useStore((state) => state.category);
+  const updateBooksData = useStore((state) => state.updateBooksData);
 
   let selCategoryBooks = [];
   let booksList = [];
@@ -33,6 +34,6 @@ export default function useGetBooks() {
   } else {
     selCategoryBooks = books?.length > 0 && [...books];
   }
-
+  updateBooksData(selCategoryBooks);
   return selCategoryBooks;
 }
