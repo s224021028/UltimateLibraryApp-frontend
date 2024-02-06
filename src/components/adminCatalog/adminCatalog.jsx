@@ -17,10 +17,13 @@ import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import { visuallyHidden } from "@mui/utils";
-import useGetBooks from "../../hooks/useGetBooks";
+import AddBook from "../addBook/addBook";
+import { useStore } from "../../store/store";
+import { Button } from "@mui/material";
+import axios from "axios";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -85,6 +88,7 @@ function EnhancedTableHead(props) {
     numSelected,
     rowCount,
     onRequestSort,
+    rows,
   } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -128,10 +132,35 @@ EnhancedTableHead.propTypes = {
   order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
+  rows: PropTypes.func.isRequired,
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected } = props;
+  const { numSelected, rows, discardRows, tempBooks } = props;
+  const closeAddNewBook = useStore((state) => state.closeAddNewBook);
+  const updateBooksData = useStore((state) => state.updateBooksData);
+
+  // save new books
+  const handleSave = () => {
+    console.log("-------save books--------", tempBooks);
+    axios
+      .post("BASE_URL", tempBooks)
+      .then((response) => {
+        // Handle the response here
+        console.log("Response:", response.data);
+        updateBooksData([...rows]);
+      })
+      .catch((error) => {
+        // Handle the error here
+        console.error("Error:", error);
+        updateBooksData([...rows]);
+      });
+  };
+
+  // dicard changes
+  const handleDiscard = () => {
+    discardRows();
+  };
 
   return (
     <Toolbar
@@ -164,16 +193,34 @@ function EnhancedTableToolbar(props) {
           component="div"
         ></Typography>
       )}
-      <Tooltip title="Add">
-        <IconButton>
-          <AddIcon />
-        </IconButton>
-      </Tooltip>
-      {numSelected > 0 && (
+      {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton>
             <DeleteIcon />
           </IconButton>
+        </Tooltip>
+      ) : (
+        <Tooltip title="Add">
+          <>
+            <IconButton>
+              <AddCircleOutlineIcon
+                onClick={() => {
+                  //open add new dialog
+                  closeAddNewBook(true);
+                }}
+              />
+            </IconButton>
+            <Button onClick={handleDiscard} variant="outlined">
+              Discard
+            </Button>
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              style={{ background: "#54989C", marginLeft: "12px" }}
+            >
+              Save
+            </Button>
+          </>
         </Tooltip>
       )}
     </Toolbar>
@@ -182,6 +229,9 @@ function EnhancedTableToolbar(props) {
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
+  rows: PropTypes.func.isRequired,
+  discardRows: PropTypes.func.isRequired,
+  tempBooks: PropTypes.func.isRequired,
 };
 
 export default function AdminCatalog() {
@@ -191,9 +241,27 @@ export default function AdminCatalog() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const rows = useGetBooks();
+  const isAddNewBook = useStore((state) => state.isAddNewBook);
+  const closeAddNewBook = useStore((state) => state.closeAddNewBook);
+  //const [bookId, setBookId] = useState(null);
+
+  const closeAddNewBookDialog = () => {
+    closeAddNewBook(!isAddNewBook);
+    //setBookId(null);
+  };
+
+  const booksData = useStore((state) => state.booksData);
+  const updateBooksData = useStore((state) => state.updateBooksData);
+
+  const [rows, setRows] = React.useState([]);
+  const [tempBooks, setTempBooks] = React.useState([]);
 
   console.log("---adminCatalogBooks------", rows);
+
+  React.useEffect(() => {
+    console.log("--------use effect--------");
+    booksData.length > 0 && setRows([...booksData]);
+  }, [booksData]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -251,6 +319,16 @@ export default function AdminCatalog() {
     setPage(0);
   };
 
+  const addNewBook = (bookDetails) => {
+    console.log("--------new book details-----", bookDetails);
+    setRows([...rows, bookDetails]);
+    setTempBooks([...tempBooks, bookDetails]);
+  };
+
+  const discardRows = () => {
+    setRows([...booksData]);
+  };
+
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -271,7 +349,18 @@ export default function AdminCatalog() {
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        {isAddNewBook && (
+          <AddBook
+            closeAddNewBookDialog={closeAddNewBookDialog}
+            addNewBook={addNewBook}
+          />
+        )}
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          rows={rows}
+          discardRows={discardRows}
+          tempBooks={tempBooks}
+        />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
             <EnhancedTableHead
@@ -281,16 +370,17 @@ export default function AdminCatalog() {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
+              rows={rows}
             />
             <TableBody>
               {visibleRows?.map((row, index) => {
-                const isItemSelected = isSelected(row.book_id);
+                const isItemSelected = isSelected(row.title);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.book_id)}
+                    onClick={(event) => handleClick(event, row.title)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -326,9 +416,11 @@ export default function AdminCatalog() {
                     <TableCell align="left">{row.book_id}</TableCell>
                     <TableCell align="left">
                       <IconButton>
-                                <EditIcon onClick={(e) => {
-                                    e.stopPropagation();
-                                }} />
+                        <EditIcon
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        />
                       </IconButton>
                     </TableCell>
                   </TableRow>
