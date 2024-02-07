@@ -28,7 +28,7 @@ Build application:
 
 Instructions to merge code:
 
------Step 1: Create a separate branch with your changes, only if it is working fine in your local, create the pull request to the main branch.
+-----Step 1: Create a separate branch with your changes, only if it is      working fine in your local then create the pull request to the main branch.
 
 -----Step 2: Repo owner will check the pull request and if it is good, then it will get merged into main.
 
