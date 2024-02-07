@@ -11,6 +11,7 @@ import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import axios from "axios";
 import bookInfoResp from "../../api_responses/book-info-response.json";
+import { BASE_URL } from "../../variables";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -28,7 +29,7 @@ export default function EditBook(props) {
   console.log("----edit--props--------", props);
   const { closeEditBookDialog, editBookDetails, handleEditBook } = props;
   //   const bookInfo = useGetBookInfo(bookId);
-console.log("---editBookDetails 1------", editBookDetails);
+  console.log("---editBookDetails 1------", editBookDetails);
   const [preview, setPreview] = React.useState(null);
 
   const initialBookData = {
@@ -43,21 +44,26 @@ console.log("---editBookDetails 1------", editBookDetails);
   };
 
   const [bookDetails, setBookDetails] = React.useState({
-    ...editBookDetails
+    ...editBookDetails,
   });
 
   React.useEffect(() => {
     axios
-      .get("BASE_URL")
+      .get(`${BASE_URL}/view/book?book_id=${editBookDetails.book_id}`)
       .then((res) => {
-        console.log("bookInfoResp", bookInfoResp);
-        setBookDetails(bookInfoResp);
-        setPreview(bookInfoResp.cover);
+        console.log("------bookInfoResp------", res);
+        if (res?.data) {
+          setBookDetails({ ...res.data });
+          setPreview(res.data.cover);
+        } else {
+          setBookDetails({ ...res });
+          setPreview(res.cover);
+        }
       })
-      .catch(() => {
-        console.log("bookInfoResp", bookInfoResp);
-        setBookDetails(bookInfoResp);
-        setPreview(bookInfoResp.cover);
+      .catch((err) => {
+        console.log("----error ---bookInfoResp-------", err);
+        // setBookDetails(bookInfoResp);
+        // setPreview(bookInfoResp.cover);
       });
   }, []);
 
@@ -190,10 +196,12 @@ console.log("---editBookDetails 1------", editBookDetails);
         {file && <Typography>{file.name}</Typography>}
         <Grid container spacing={3} justifyContent={"start"}>
           <Grid item spacing={3}>
-            {preview && <img src={preview} width={100} height={120} alt="book" />}
+            {preview && (
+              <img src={preview} width={100} height={120} alt="book" />
+            )}
           </Grid>
-          </Grid>
-        
+        </Grid>
+
         <Typography>Description</Typography>
         <TextareaAutosize
           minRows={3}

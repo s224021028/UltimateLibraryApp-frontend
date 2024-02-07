@@ -26,6 +26,7 @@ import { Button } from "@mui/material";
 import axios from "axios";
 import DeleteBook from "../deleteBook/deleteBook";
 import EditBook from "../editBook/editBook";
+import { BASE_URL } from "../../variables";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -149,11 +150,11 @@ function EnhancedTableToolbar(props) {
   const handleSave = () => {
     console.log("-------save books--------", tempBooks);
     axios
-      .post("BASE_URL", tempBooks)
+      .post(`${BASE_URL}/admin/add/books`, tempBooks)
       .then((response) => {
         // Handle the response here
         console.log("Response:", response.data);
-        updateBooksData([...rows]);
+        updateBooksData([...response.data]);
       })
       .catch((error) => {
         // Handle the error here
@@ -286,7 +287,7 @@ export default function AdminCatalog() {
     console.log("---------handleEditBook---------", editedBookDetails);
 
     axios
-      .post("BASE_URL", editedBookDetails)
+      .post(`${BASE_URL}/admin/update/book`, editedBookDetails)
       .then((response) => {
         // Handle the response here
         console.log("Response:", response.data);
@@ -314,9 +315,8 @@ export default function AdminCatalog() {
   //delete book
   const handleDelete = () => {
     console.log("---delete--selected-------", selected);
-    const BASE_URL = "url";
     const data = [...selected];
-    axios.delete(BASE_URL, { data })
+    axios.get(`${BASE_URL}/admin/delete/books?data=${data}`)
       .then(response => {
         // Handle success
         console.log('Deleted successfully', response);

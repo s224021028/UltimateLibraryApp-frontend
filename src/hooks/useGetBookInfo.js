@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import bookInfoResp from "../api_responses/book-info-response.json";
 import axios from "axios";
-
-const BASE_URL =
-  "https://onedrive.live.com/?authkey=%21ACcvQjo0JeZuH7U&cid=47D3B2D6AF52A4EC&id=47D3B2D6AF52A4EC%212969&parId=47D3B2D6AF52A4EC%212961&o=OneUp";
+import { BASE_URL } from "../variables";
 
 export default function useGetBookInfo(bookId) {
   console.log("------bookId---------");
@@ -11,13 +9,13 @@ export default function useGetBookInfo(bookId) {
 
   useEffect(() => {
     axios
-      .get(BASE_URL)
+      .get(`${BASE_URL}/view/book?book_id=${bookId}`)
       .then((res) => {
-        console.log("bookInfoResp", bookInfoResp);
-        setBookInfo(bookInfoResp);
+        console.log("------bookInfoResp--hook----", res);
+        setBookInfo([...res]);
       })
       .catch(() => {
-        console.log("bookInfoResp", bookInfoResp);
+        console.log("----error bookInfoResp--hook---", bookInfoResp);
         setBookInfo(bookInfoResp);
       });
   }, []);
