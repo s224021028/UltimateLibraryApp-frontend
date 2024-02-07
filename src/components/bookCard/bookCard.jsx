@@ -38,7 +38,7 @@ export default function BookCard({ bookDetails }) {
         </CardContent>
       </CardActionArea>
       </Card>
-      <BookInfo closeDialog={closeDialog} bookId={bookId} open={open} />
+      {bookId && <BookInfo closeDialog={closeDialog} bookId={bookId} open={open} />}
       </>
   );
 }
