@@ -17,6 +17,9 @@ import icon from "../../images/appicon.png";
 import CenteredTabs from "../tabs/tabs";
 import AdminTabs from "../adminTabs/adminTabs";
 import useGetBooks from "../../hooks/useGetBooks";
+import { useStore } from "../../store/store";
+import axios from "axios";
+import { BASE_URL } from "../../variables";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -61,11 +64,25 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function Header() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-  const [isAdmin, setIsAdmin] = React.useState(true);
+  //const [isAdmin, setIsAdmin] = React.useState(true);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   useGetBooks();
+const isAdmin = useStore((state) => state.isAdmin);
+   const updateIsAdmin = useStore((state) => state.updateIsAdmin);
+  const updateUserId = useStore((state) => state.updateUserId);
+
+  const handleLogout = () => {
+    //logout
+    axios.get(`${BASE_URL}/logout`).then((res) => {
+      console.log("---logout------");
+    }).catch((err) => {
+      console.log("-----logout error-----", err)
+    })
+    updateUserId(null);
+    updateIsAdmin(false);
+  }
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -102,7 +119,7 @@ export default function Header() {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={() => { handleMenuClose(); handleLogout(); }}>Logout</MenuItem>
     </Menu>
   );
 
