@@ -67,7 +67,7 @@ export default function BookInfo(props) {
             </Typography>
             <Typography variant="inherit">{bookInfo.category}</Typography>
             <Button variant="contained" size="small" style={{backgroundColor:"#54989C", marginTop:"50px"}}>
-              Request
+              Reserve
             </Button>
           </Grid>
           

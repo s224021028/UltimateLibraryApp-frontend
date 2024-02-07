@@ -12,10 +12,14 @@ export default function useGetBookInfo(bookId) {
       .get(`${BASE_URL}/view/book?book_id=${bookId}`)
       .then((res) => {
         console.log("------bookInfoResp--hook----", res);
-        setBookInfo([...res]);
+        if (res?.data) {
+          setBookInfo({ ...res.data });
+        } else {
+          setBookInfo({ ...res });
+        }
       })
-      .catch(() => {
-        console.log("----error bookInfoResp--hook---", bookInfoResp);
+      .catch((err) => {
+        console.log("----error bookInfoResp--hook---", err);
         setBookInfo(bookInfoResp);
       });
   }, []);
