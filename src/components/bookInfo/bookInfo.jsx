@@ -4,12 +4,13 @@ import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 import useGetBookInfo from "../../hooks/useGetBookInfo";
 import { Grid } from "@mui/material";
+import axios from "axios";
+import { BASE_URL } from "../../variables";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -26,6 +27,18 @@ export default function BookInfo(props) {
   const bookInfo = useGetBookInfo(bookId);
 
   console.log("----bookInfo hook-------", bookInfo);
+
+  const [isReserved, setIsReserved] = useState(false);
+
+  const handleReserve = () => {
+    axios.post(`${BASE_URL}/user/make/reservation`, {book_id:bookId}).then((res) => {
+      console.log("------book reserve request success------");
+      setIsReserved(true);
+    }).catch((err) => {
+      console.log("------book reserve request failed------");
+      setIsReserved(true);
+    })
+  }
 
   if (!bookInfo) {
     return null;
@@ -66,8 +79,8 @@ export default function BookInfo(props) {
               {bookInfo.author}
             </Typography>
             <Typography variant="inherit">{bookInfo.category}</Typography>
-            <Button variant="contained" size="small" style={{backgroundColor:"#54989C", marginTop:"50px"}}>
-              Reserve
+            <Button disabled={isReserved} variant="contained" size="small" style={{backgroundColor:"#54989C", marginTop:"50px"}} onClick={handleReserve}>
+              {isReserved ? "Reserve request sent":"Reserve"}
             </Button>
           </Grid>
           
