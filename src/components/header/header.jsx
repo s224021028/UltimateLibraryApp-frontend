@@ -199,7 +199,7 @@ export default function Header() {
             ></IconButton>
           </Box>
         </Toolbar>
-        {!isAdmin ? <AdminTabs /> : <CenteredTabs />}
+        {isAdmin ? <AdminTabs /> : <CenteredTabs />}
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
