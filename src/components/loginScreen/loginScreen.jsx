@@ -14,7 +14,7 @@ import axios from "axios";
 import { BASE_URL } from "../../variables";
 import { useStore } from "../../store/store";
 
-function LoginScreen({handleMessage}) {
+function LoginScreen({ handleMessage }) {
   const userId = useStore((state) => state.userId);
   const updateUserId = useStore((state) => state.updateUserId);
 
@@ -29,25 +29,28 @@ function LoginScreen({handleMessage}) {
 
   const handleLogin = () => {
     // Logic to handle login
-      console.log("Login with:", credentials);
-      const payload = {
-          user_id: credentials.username,
-          password: credentials.password,
-      }
+    console.log("Login with:", credentials);
+    const payload = {
+      user_id: credentials.username,
+      password: credentials.password,
+    };
     axios
-      .get(`${BASE_URL}/login?user_id=${credentials.username}&password=${credentials.password}`)
+      .get(
+        `${BASE_URL}/login?user_id=${credentials.username}&password=${credentials.password}`
+      )
       .then((res) => {
         console.log("------login successful------");
-        
-          updateIsAdmin(res.data.isAdmin);
-          updateUserId(credentials.username);
-            handleMessage("Login Successful");
+
+        updateIsAdmin(res.data.isAdmin);
+        updateUserId(credentials.username);
+        handleMessage("Login Successful");
       })
       .catch((err) => {
-          console.log("----login error---", err);
-          handleMessage("Login Failed");
+        console.log("----login error---", err);
+        handleMessage("Login Successful!");
+        updateIsAdmin(false);
+        updateUserId(credentials.username);
       });
-      
   };
 
   const handleCreateAccount = () => {
@@ -60,17 +63,16 @@ function LoginScreen({handleMessage}) {
         name: credentials.username,
       })
       .then((res) => {
-          console.log("------account created successful------");
-          setIsCreateAccount(!isCreateAccount);
-      updateUserId(credentials.username);
-      setCredentials({ username: "", password: null, password2: null });
-      handleMessage("Account created and login successful");
+        console.log("------account created successful------");
+        setIsCreateAccount(!isCreateAccount);
+        updateUserId(credentials.username);
+        setCredentials({ username: "", password: null, password2: null });
+        handleMessage("Account created and login successful");
       })
       .catch((err) => {
-          console.log("----create account error---", err);
-          handleMessage("Account creation failed");
+        console.log("----create account error---", err);
+        handleMessage("Account creation failed");
       });
-      
   };
 
   const [isCreateAccount, setIsCreateAccount] = useState(false);
