@@ -7,7 +7,7 @@ UltimateLibrary Application UI is developed using ReactJS. Below are the steps t
 Depndencies:
 ----Step 1: install node js
 ----Step 2: install npm
-----Step 3: clone the GIT repo from link 
+----Step 3: clone the GIT repo from link https://github.com/s224021028/UltimateLibraryApp-frontend.git
 
 Installation:
 ----Step 4: open cloned repo in the command prompt or terminal.
@@ -28,7 +28,7 @@ Build application:
 
 Instructions to merge code:
 
------Step 1: Create a separate branch with your changes, only if it is      working fine in your local then create the pull request to the main branch.
+-----Step 1: Create a separate branch with your changes, only if it is working fine in your local then create the pull request to the main branch.
 
 -----Step 2: Repo owner will check the pull request and if it is good, then it will get merged into main.
 
